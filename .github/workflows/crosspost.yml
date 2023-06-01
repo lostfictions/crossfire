@@ -1,0 +1,27 @@
+name: retweet on a schedule
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "6,26,46 * * * *"
+
+jobs:
+  scheduled:
+    runs-on: ubuntu-latest
+    environment: retweet
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: yarn start
+        env:
+          NODE_ENV: "production"
+          TWITTER_ACCESS_KEY: ${{ secrets.TWITTER_ACCESS_KEY }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+          TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
+          TWITTER_CONSUMER_SECRET: ${{ secrets.TWITTER_CONSUMER_SECRET }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
